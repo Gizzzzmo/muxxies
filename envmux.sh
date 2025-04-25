@@ -3,7 +3,10 @@
 session_name=$(basename "$(pwd)")
 
 # create new session with session_name, if that fails, then there already exists a session with that name, so we just switch to that session
-tmux new-session -d -s "$session_name" 2>/dev/null || (tmux switch -t "$session_name" && exit)
+if ! tmux new-session -d -s "$session_name" 2>/dev/null; then
+    tmux switch -t "$session_name"
+    exit 0
+fi
 
 env -0 | perl -0 -ne 'print "$1\n" if /^([^=]+)=/' | while IFS= read -r line; do
     eval var_value=\"\$"$line"\"
